@@ -186,7 +186,7 @@ p:last-child{margin-bottom:0}
   <div class="sb-logo">
     <div class="sb-eye">INDUSTRIAL GRADE</div>
     <div class="sb-title">低代码大屏设计器<br>完整技术方案</div>
-    <div class="sb-ver">v2.1 · Vue3 · 含混合画布</div>
+    <div class="sb-ver">v2.1 · Vue3.5+ · Vite7 · 含混合画布</div>
   </div>
   <div class="nav-grp">
     <div class="nav-lbl">Overview</div>
@@ -226,7 +226,10 @@ p:last-child{margin-bottom:0}
     <a class="nav-a" href="#s25"><span class="n">25</span>部署与发布</a>
     <a class="nav-a" href="#s26"><span class="n">26</span>嵌入 SDK</a>
     <a class="nav-a" href="#s27"><span class="n">27</span>监控与审计</a>
-    <a class="nav-a" href="#s28"><span class="n">28</span>迭代路线图</a>
+    <a class="nav-a" href="#s28"><span class="n">28</span>主题引擎与样式</a>
+    <a class="nav-a" href="#s29"><span class="n">29</span>多人协同架构</a>
+    <a class="nav-a" href="#s30"><span class="n">30</span>测试与质量保障</a>
+    <a class="nav-a" href="#s31"><span class="n">31</span>迭代路线图</a>
   </div>
 </nav>
 
@@ -235,7 +238,7 @@ p:last-child{margin-bottom:0}
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-chip"><div class="pulse"></div>COMPLETE SPECIFICATION · PRODUCTION READY · v2.1</div>
+  <div class="hero-chip"><div class="pulse"></div>COMPLETE SPECIFICATION · PRODUCTION READY · v2.1 · Vue3.5 / Vite7.3.1</div>
   <h1>基于 <b>Vue 3</b> 的工业级<br>低代码<em>混合画布</em>大屏设计器</h1>
   <p class="hero-sub">
     面向工业数字化场景的全栈解决方案。支持数据大屏组件与工业拓扑图元在同一画布自由混用，
@@ -296,7 +299,7 @@ p:last-child{margin-bottom:0}
       <thead><tr><th>技术层</th><th>选型</th><th>版本</th><th>选型理由</th></tr></thead>
       <tbody>
         <tr><td>前端框架</td><td><span class="tag em">Vue 3</span></td><td>3.5+</td><td>Composition API 支持复杂逻辑复用；响应式系统性能优越；TypeScript 原生支持；响应式系统 v3.5 引入细粒度订阅优化</td></tr>
-        <tr><td>构建工具</td><td><span class="tag cy">Vite 6</span></td><td>6.x</td><td>极速 HMR；原生 ESM；Module Federation 插件支持自定义组件远程加载；Environment API 支持多环境构建</td></tr>
+        <tr><td>构建工具</td><td><span class="tag cy">Vite 7</span></td><td><span class="tag em">7.3.1</span></td><td>极速 HMR；原生 ESM；Module Federation；Environment API 多环境构建；性能全面提升</td></tr>
         <tr><td>状态管理</td><td><span class="tag vi">Pinia</span></td><td>2.x</td><td>TypeScript 原生；DevTools 集成；无 mutations 样板代码；支持 Store 间依赖</td></tr>
         <tr><td>路由</td><td><span class="tag cy">Vue Router</span></td><td>4.x</td><td>官方路由，完整 TypeScript 支持，支持路由级权限守卫</td></tr>
         <tr><td>UI 框架</td><td><span class="tag">Element Plus</span></td><td>2.x</td><td>企业级组件丰富；支持按需引入；主题 CSS 变量定制</td></tr>
@@ -305,11 +308,13 @@ p:last-child{margin-bottom:0}
         <tr><td>地图</td><td><span class="tag">AMap / MapboxGL</span></td><td>—</td><td>高德 2D 地图；Mapbox 3D 地图渲染，支持 GeoJSON 图层</td></tr>
         <tr><td>Canvas 引擎</td><td><span class="tag cy">Konva.js</span></td><td>9.x</td><td>自由画布场景（自定义图元 SVG 编辑器），Vue 绑定完善</td></tr>
         <tr><td>类型系统</td><td><span class="tag em">TypeScript</span></td><td>5.x</td><td>严格模式，工业级代码质量保障</td></tr>
-        <tr><td>CSS 方案</td><td><span class="tag cy">UnoCSS + CSS Vars</span></td><td>—</td><td>原子化 CSS 提升开发效率；CSS 变量支持主题运行时切换</td></tr>
+        <tr><td>CSS 方案</td><td><span class="tag cy">UnoCSS</span></td><td>最新稳定版</td><td>原子化 CSS；<strong>图标预设（@unocss/preset-icons）</strong>，直接在 HTML/Vue 中使用 iconify 图标类；CSS 变量主题运行时切换；按需生成零冗余</td></tr>
+        <tr><td>图标系统</td><td><span class="tag cy">Iconify (UnoCSS Icon Preset)</span></td><td>—</td><td><strong>@iconify-json/carbon</strong>（IBM Carbon，工业/设备/分析图标，约 1200+）+ <strong>@iconify-json/mdi</strong>（Material Design Icons，通用全覆盖，7000+）；按需按需引用，构建时自动 tree-shake，零运行时体积</td></tr>
         <tr><td>网络请求</td><td><span class="tag">Axios + Alova</span></td><td>—</td><td>Axios 基础；Alova 提供请求策略、缓存、自动重试等高级特性</td></tr>
         <tr><td>WebSocket</td><td><span class="tag em">Socket.io-client</span></td><td>—</td><td>断线重连；命名空间隔离；与 MQTT 桥接兼容</td></tr>
         <tr><td>代码规范</td><td><span class="tag">ESLint + Prettier</span></td><td>—</td><td>配合 husky + lint-staged，pre-commit 强制检查</td></tr>
         <tr><td>测试框架</td><td><span class="tag">Vitest + Playwright</span></td><td>—</td><td>Vitest 单元测试与 Vite 共享配置；Playwright E2E 多浏览器</td></tr>
+        <tr><td>项目脚手架</td><td><span class="tag em">create-vue</span></td><td>最新版</td><td><code>npm create vue@latest</code> 官方推荐方式，支持 TypeScript / Router / Pinia / Vitest / ESLint / Prettier 一键勾选，与 Vite 7 深度集成</td></tr>
         <tr><td>Monorepo</td><td><span class="tag vi">pnpm + Turborepo</span></td><td>—</td><td>高效 workspace 管理；增量构建缓存；依赖去重</td></tr>
         <tr><td>加密安全</td><td><span class="tag">crypto-js + jose</span></td><td>—</td><td>数据加密传输；JWT 鉴权；凭证服务端加密存储</td></tr>
         <tr><td>CI/CD</td><td><span class="tag">GitHub Actions / Jenkins</span></td><td>—</td><td>自动化测试、构建、Docker 镜像发布流水线</td></tr>
@@ -1849,10 +1854,68 @@ renderer.<span class="fn">destroy</span>()                          <span class=
   </div>
 </section>
 
-<!-- 28 迭代路线图 -->
+
+<!-- 28 主题引擎与样式 -->
 <section class="sec" id="s28">
   <div class="sec-hd">
-    <div class="sec-tag em">28</div>
+    <div class="sec-tag cy">28</div>
+    <div><div class="sec-title">主题引擎与全局样式</div><div class="sec-sub">THEME ENGINE</div></div>
+  </div>
+  <p>工业级大屏需要极强的样式定制化能力，方案采用 <strong>CSS 变量定义契约 + UnoCSS 原子化编排</strong> 结合的双轨驱动模型。</p>
+  <div class="g3">
+    <div class="card"><div class="ca cy"></div><h3>CSS Theme Tokens</h3>
+      <p>抽取超过 200 个全局设计 Token（色彩、响应式断点、阴影深浅），全部映射为 CSS Variables，支持黑暗/明亮以及专属品牌套件（例如科技蓝主题、暗夜工业主题）。</p>
+    </div>
+    <div class="card"><div class="ca em"></div><h3>UnoCSS 深度集成</h3>
+      <p>基于 UnoCSS 实现构建时的组件样式按需提取；通过 <code>@unocss/preset-icons</code> 引入纯 CSS 图标加载机制，将 iconify 上的海量工业图标映射为 HTML 类名。</p>
+    </div>
+    <div class="card"><div class="ca am"></div><h3>组件深层覆盖</h3>
+      <p>Element Plus 的组件库及第三方图表（ECharts），均在顶层容器捕获 Token 值。动态修改 <code>document.documentElement.style</code> 即可在一毫秒内完成数百个组件的换肤刷新。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 29 多人协同架构 -->
+<section class="sec" id="s29">
+  <div class="sec-hd">
+    <div class="sec-tag em">29</div>
+    <div><div class="sec-title">多人协同架构设计 (预研)</div><div class="sec-sub">COLLABORATION ARCHITECTURE</div></div>
+  </div>
+  <p>针对企业级用户多人同时编辑同一个工业组态大屏的诉求，基于 <strong>Y.js (CRDT 算法)</strong> 实现云端状态分发与操作冲突自动解决。</p>
+  <table class="tbl" style="margin-top:10px">
+    <thead><tr><th>协同模块</th><th>技术方案</th><th>解决的核心痛点</th></tr></thead>
+    <tbody>
+      <tr><td>状态同步</td><td><strong>Y.js + y-websocket</strong></td><td>基于 CRDT 算法提供无锁并发的数据结构同步，比 OT 算法更容易实现，天然支持去中心化或服务端转发。</td></tr>
+      <tr><td>冲突解决</td><td><strong>增量指令队列</strong></td><td>多用户同时移动 Vue Flow 图元或编辑同一文本，依靠数组的相对索引修改合并差异，不会发生互相覆盖的问题。</td></tr>
+      <tr><td>用户感知感知</td><td><strong>Yjs Awareness Protocol</strong></td><td>实时获取其他协作者的光标位置、选中的节点并以不同的色彩高亮标注（例如显示 "王工 正在编辑水泵"）。</td></tr>
+      <tr><td>离线编辑</td><td><strong>IndexedDB 本地持久化缓存</strong></td><td>协同断网时退化为本地缓存栈，网络恢复后，自动与服务器通过协同差异向量(State Vector)进行快照合并。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 30 测试与质量保障 -->
+<section class="sec" id="s30">
+  <div class="sec-hd">
+    <div class="sec-tag am">30</div>
+    <div><div class="sec-title">测试与质量保障体系</div><div class="sec-sub">TESTING & QA</div></div>
+  </div>
+  <p>工业控制、物联大屏系统对代码质量有严苛要求。结合 Monorepo 体系落实三位一体的测试金字塔：</p>
+  <div class="cw" style="margin-bottom:14px">
+    <div class="cb-bar"><span class="cb-fn">工程化 CI 质量拦截流</span></div>
+    <div class="cb"><code>commit 触发 → Lint 静态验证 → Vitest 核心用例评估 → E2E 视图快照回归比对</code></div>
+  </div>
+  <ul class="fl">
+    <li><strong>引擎级单元测试 (Vitest)</strong>：针对 Command 历史记录队列、 Schema 解析映射、 A* 寻路避障算法等核心 JavaScript 计算逻辑进行输入输出比对，指标要求分支覆盖率 > 80%。</li>
+    <li><strong>E2E 集成测试 (Playwright)</strong>：涵盖画布操作的跨浏览器真实场景模拟（拖拽物料入画布、图元连接 Port 点、右键调出属性菜单并修改图表颜色），用于重构或迭代时的主流程护航。</li>
+    <li><strong>视觉回归测试 (Visual Regression)</strong>：借助 Playwright Snapshot，以像素对比级记录边动画渲染（Edge Animations）和复杂渐变图表的视觉差异并自动上报。</li>
+  </ul>
+</section>
+
+<!-- 31 迭代路线图 -->
+<section class="sec" id="s31">
+  <div class="sec-hd">
+    <div class="sec-tag vi">31</div>
+
     <div><div class="sec-title">迭代路线图（含混合画布）</div><div class="sec-sub">DEVELOPMENT ROADMAP</div></div>
   </div>
 

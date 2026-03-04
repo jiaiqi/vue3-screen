@@ -624,3 +624,358 @@ interface EdgeAnimation {
 | 阀门联动 | 阀门关闭 true → animation.type='none'，管道变灰 |
 | 故障告警 | 设备故障 → 连线动画强制变红色闪烁，忽略原色彩配置 |
 | 电压状态 | 正常→绿色正常频率；欠压→黄色；断电→无动画灰色 |
+
+
+---
+
+## 15 图元数据绑定设计
+
+### 状态映射规则
+
+```typescript
+interface StateRule {
+  condition: string       // JS 表达式，如 'v === "running"'
+  style?: {
+    borderColor: string
+    glowColor: string
+    svgFill: string
+    opacity: number
+  }
+  nodeAnimation?: 'rotate'|'blink'|'pulse'|'none'
+  badge?: {text:string, color:string}
+  affectEdges?: boolean   // 状态变化联动影响关联连线
+}
+
+// 示例：水泵状态配置
+rules: [
+  { condition: 'v === "running"',
+    style: { borderColor: '#00e676', glowColor: '#00e676' },
+    nodeAnimation: 'rotate', affectEdges: true },
+  { condition: 'v === "fault"',
+    style: { borderColor: '#ff4081' },
+    nodeAnimation: 'blink',
+    badge: { text: '故障', color: '#ff4081' } },
+  { condition: 'v === "stop"',
+    style: { opacity: 0.4 }, affectEdges: true }
+]
+```
+
+### 图元 Tooltip 面板
+
+鼠标悬停显示数据浮层：字段列表（标签 + 实时值 + 单位 + 趋势箭头）、迷你趋势图、点击跳转详情页、超阈值字段红色高亮。
+
+### 图元分组与子图
+
+- 多个图元可 Ctrl+G 打组，折叠后显示单一图元图标
+- 子图支持独立坐标空间和内部连线，双击进入子图编辑模式
+
+---
+
+## 16 拓扑交互设计
+
+### 连线操作流程
+
+```
+1. 悬停图元 → 出现蓝色连接点（Port Handle）
+2. 悬停连接点 → 光标变十字，Port 放大高亮
+3. 按下拖动 → 临时连线（蓝色虚线跟随鼠标）
+4. 拖到目标 → 有效 Port 绿色高亮 / 无效红色
+5. 释放 → 创建 Edge，弹出动画类型选择面板
+```
+
+### 画布模式切换
+
+| 模式 | 行为 |
+|---|---|
+| 大屏模式 | 连接点隐藏，拖拽行为同原版，空白区域框选 |
+| 拓扑模式 | 悬停节点显示 Port，可拖线，Space+拖动平移 |
+| 混合模式 ★ | 两种行为共存，智能识别意图（默认推荐） |
+
+**物料面板扩充：** 顶部 Tab 新增图元分类，支持搜索和收藏，自动布局（dagre/elk），导入 Visio `.vsdx` / Draw.io `.drawio` 格式。
+
+---
+
+## 17 大屏 Schema 规范 v2.1
+
+```typescript
+interface ScreenSchema {
+  version: '2.1.0'
+  id: string
+  name: string
+  canvas: {
+    width: number; height: number
+    background: Background
+    fitMode: 'scale'|'vw'|'rem'
+    canvasMode: 'screen'|'hybrid'|'topology'
+  }
+  dataSources: DataSource[]
+  variables: Variable[]
+  globalFilters: Filter[]
+  theme: ThemeConfig
+  pages: Page[]
+  events: EventBinding[]
+}
+
+interface Page {
+  id: string; name: string
+  nodes: ComponentNode[]           // Widget 节点（原有）
+  graphNodes?: GraphNodeSchema[]   // ★ 新增：拓扑图元
+  edges?: EdgeSchema[]             // ★ 新增：连线
+  graphLayout?: {
+    algorithm: 'dagre'|'elk'|'force'|'manual'
+    options: Record<string, any>
+  }
+}
+```
+
+### Schema 版本迁移（2.0 → 2.1）
+
+```typescript
+const migrations: Migration[] = [
+  { from: '2.0.0', to: '2.1.0', migrate(schema) {
+    schema.pages.forEach(p => {
+      p.graphNodes ??= []
+      p.edges ??= []
+      p.nodes.forEach(n => { n.nodeKind ??= 'widget' })
+    })
+    schema.canvas.canvasMode ??= 'screen'
+    return schema
+  }}
+]
+```
+
+---
+
+## 18 工程目录结构（Monorepo）
+
+```
+screen-designer/                  # Monorepo 根目录（pnpm workspace）
+├── apps/
+│   ├── designer/                 # 设计器主应用（npm create vue@latest）
+│   ├── renderer/                 # 发布端渲染器
+│   ├── admin/                    # 管理后台
+│   └── preview/                  # 独立预览应用
+├── packages/
+│   ├── core/                     # 核心引擎（画布/历史/事件/Schema）
+│   ├── components/               # 大屏 Widget 组件库
+│   ├── graph-nodes/              # ★ 拓扑图元库
+│   │   ├── industrial/           # 工艺设备
+│   │   ├── electrical/           # 电气设备
+│   │   ├── instruments/          # 仪器仪表
+│   │   ├── it-topology/          # IT 拓扑
+│   │   └── GraphNode.vue         # 图元容器组件
+│   ├── edge-animations/          # ★ 连线动画包
+│   │   ├── WaterFlowEdge.vue
+│   │   ├── ElectricEdge.vue
+│   │   ├── ArrowFlowEdge.vue
+│   │   └── animation-engine.ts
+│   ├── data-center/              # 数据源引擎
+│   ├── plugin-system/            # 插件 SDK
+│   ├── theme-engine/             # 主题系统（UnoCSS 主题）
+│   └── embed-sdk/                # ★ 嵌入 SDK
+├── services/
+│   ├── api-gateway/
+│   ├── data-proxy/               # 数据库/MQTT 代理
+│   └── asset-service/            # 图元/组件资源服务
+└── pnpm-workspace.yaml
+```
+
+---
+
+## 19 状态管理设计
+
+| Store | 职责 |
+|---|---|
+| `useDesignerStore` | 当前编辑 Schema（主状态）、选中节点/连线列表、多页面状态、自动保存 |
+| `useCanvasStore` | 画布缩放/平移/尺寸、辅助线、网格配置、画布模式 |
+| `useSelectionStore` | 选中节点 ID 列表（Widget+Graph+Edge）、框选范围、焦点元素 |
+| `useDataStore` | 运行时数据：各数据源实例、请求状态、全局变量值、数据订阅管理 |
+| `useHistoryStore` | 命令栈（BaseCommand[]）、当前指针，提供 undo/redo/batch API |
+| `usePluginStore` | 注册组件/图元/边动画类型/数据源类型表、工具栏扩展点 |
+
+> **核心原则：** Schema 作为 Single Source of Truth，所有操作通过 Command 对象修改 Schema，永远不直接修改 UI 状态。
+
+---
+
+## 20 插件系统设计
+
+```typescript
+interface DesignerPlugin {
+  name: string
+  version: string
+  install(ctx: PluginContext): void
+}
+interface PluginContext {
+  registerComponent(meta, comp): void
+  registerGraphNode(meta, comp): void
+  registerEdgeType(type, comp): void
+  registerDataSource(type, adapter): void
+  registerToolbarItem(item): void
+  hooks: {
+    onSchemaChange(fn): void
+    onComponentAdd(fn): void
+    onEdgeCreate(fn): void
+    onPublish(fn): void
+  }
+}
+```
+
+**内置插件：** `plugin-echarts` · `plugin-amap` · `plugin-mapbox` · `plugin-mqtt` · `plugin-export` · `plugin-pid`
+
+---
+
+## 21 错误边界与组件沙箱隔离
+
+每个组件节点包裹独立错误边界（Vue Error Handler + Suspense），单组件崩溃不影响整个画布。
+
+**JS 沙箱（Proxy 白名单）：** 允许 `Math/Array/Object/JSON/dayjs/lodash/console`，禁止 `fetch/XMLHttpRequest/eval/Function/window`，2000ms 超时保护防死循环。
+
+---
+
+## 22 性能优化策略
+
+### 综合性能目标
+
+| 指标 | 目标值 |
+|---|---|
+| 设计器首屏 | < 3s |
+| 渲染器加载 | < 1s |
+| 拖拽/动画帧率 | 60fps |
+| 同屏 Widget | 200+ |
+| 图元节点 | 500+ |
+| 动画连线 | 200+ |
+
+| 优化维度 | 关键措施 |
+|---|---|
+| 设计态 | 虚拟化渲染（>200节点）· 拖拽 Ghost · 300ms 防抖 · Web Worker（吸附/A*/碰撞） |
+| 运行态 | 按类型代码分割 · WebSocket 帧节流 · ECharts 增量更新 · IndexedDB 缓存 |
+| 混合画布 | 纯 CSS 动画（GPU）· IntersectionObserver 暂停非可见 · 边路径 memoize · Canvas 降级 |
+
+---
+
+## 23 权限控制与安全设计
+
+**RBAC：** 超管 / 管理员 / 设计师 / 访客，资源级细粒度（创建/编辑/发布/删除/查看）。
+
+| 安全维度 | 措施 |
+|---|---|
+| 数据安全 | 凭证服务端加密；API 密钥代理转发；敏感字段脱敏 |
+| 发布安全 | 密码保护 / IP 白名单 / Token 时效；Referer 白名单；SRI 完整性校验 |
+| 代码安全 | JS 沙箱执行；自定义代码组件隔离 |
+
+---
+
+## 24 国际化与无障碍设计
+
+**i18n：** vue-i18n v9，懒加载语言包，默认支持简体中文/繁体中文/英语/日语/阿拉伯语（RTL），遵循 ECMA-402 Intl 标准。
+
+**a11y：** 键盘导航 · 全量 ARIA label · 颜色非唯一信息载体 · WCAG 2.1 AA 对比度 · 拖拽有键盘替代（坐标输入框）
+
+---
+
+## 25 部署与发布方案
+
+| 部署方式 | 说明 |
+|---|---|
+| SaaS 云端 | Nginx/CDN → API Gateway → 微服务 → PostgreSQL+Redis+MinIO+ClickHouse |
+| Docker Compose | 一键部署（开发/测试环境） |
+| Kubernetes Helm | 生产环境高可用 |
+| 离线 air-gap | 含所有依赖镜像的离线安装包 |
+| 国产化 | 鲲鹏/龙芯架构，达梦/人大金仓数据库 |
+
+**大屏发布流程：** 设计完成 → 预览检查 → 配置发布（权限/密码/时效）→ Schema 压缩+版本快照 → 生成 URL → 访问/iframe/SDK
+
+**版本管理：** 每次发布创建 Schema 快照 · 可回滚 · 灰度发布 · 热更新（SSE + 增量 Patch，不刷新页面）
+
+---
+
+## 26 嵌入 SDK 设计
+
+```typescript
+// Web Component（框架无关）
+import '@screen/embed-sdk'
+// <screen-renderer screen-id="xxx" token="yyy" theme="dark"></screen-renderer>
+
+// Vue 组件
+import { ScreenRenderer } from '@screen/embed-sdk/vue'
+// <ScreenRenderer :screenId="id" :token="token" :variables="vars" @event="onEvent"/>
+
+// JS API
+const renderer = new ScreenRenderer({
+  container: '#app',
+  screenId: 'screen_xxx',
+  token: 'jwt_token',
+  variables: { siteId: '001' },
+  onEvent: (eventName, data) => {}
+})
+renderer.setVariables({ timeRange: '7d' })
+renderer.destroy()
+```
+
+Token 由服务端签发（JWT），含屏幕 ID、有效期、Referer 白名单，支持自动续期。
+
+---
+
+## 27 监控与操作审计
+
+| 维度 | 说明 |
+|---|---|
+| 前端性能监控 | Sentry 异常采集；Web Vitals（FCP/LCP/CLS）；发布端帧率监控 |
+| 运营统计 | 大屏 PV/UV；数据源请求成功率；组件点击热力图 |
+| 操作审计日志 | 谁/时间/资源/操作全记录；支持查询和导出；满足等保 2.0 合规 |
+
+---
+
+## 28 主题引擎与全局样式
+
+工业级大屏需要极强的样式定制化能力，方案采用 **CSS 变量定义契约 + UnoCSS 原子化编排** 结合的双轨驱动模型：
+
+- **CSS Theme Tokens**：抽取超过 200 个全局设计 Token（色彩、响应式断点、阴影深浅），映射为全局 CSS 变量。支持无缝切换黑暗工业、明亮科技等不同主题风貌。
+- **UnoCSS 深度集成**：利用框架按需生成原子化样式的特性减少冗余大屏加载文件体积。借助 `@unocss/preset-icons` 进行图标集按需自动引用打包。
+- **组件深层继承覆盖**：从底座图表引擎到 Element Plus 工具库均继承根级设计 Token。主题切换不再繁杂，对 Document 的样式映射毫秒内即可产生全局换肤效果。
+
+---
+
+## 29 多人协同架构设计 (预研)
+
+针对企业级高频协作应用场景（同一工业组态图或数字孪生中台），方案设计并预引入基于 **Y.js (CRDT)** 的全套协作机制。
+
+| 协同模块 | 技术方案 | 解决的核心痛点 |
+|---|---|---|
+| **状态同步** | Y.js + y-websocket | 基于 CRDT 无锁并发同步计算结构，替代落后的 OT（操作转换） 锁机制，网络时延下极其健壮。 |
+| **冲突解决** | 增量操作队列映射 | 当两名设计师拖动图表或变更 Vue Flow 工业图元配置，依时间向量平滑合并视图，不会全量覆盖或断联崩溃。 |
+| **协同觉察** | Awareness Protocol | 透传用户的键鼠指针坐标轨迹与圈层光标，标记组件高亮（如 "张工 正在编辑折线图"）。 |
+| **离线接管** | IndexedDB 本地快照缓存 | 协同弱网/断网降维为本地编辑栈，切回在线环境将自动执行差异快照版本整合。 |
+
+---
+
+## 30 测试与质量保障体系
+
+为了保障工业生产网和高价值控制大屏的不间断可用性构建全方位测试底座：
+
+1. **核心逻辑单元级测试 (Vitest)**：重兵部署针对 Schema 生成、数据沙箱转换、历史撤回防溢出等关键抽象层逻辑验证单元，覆盖率强制 > 80%。
+2. **端到端视图操作链路级 (Playwright)**：深度集成构建测试用例编排（涉及物料托盘拖放验证、画布吸附算法行为和弹窗层级捕获交互），作为持续重构护城河。
+3. **视觉特征快照回归 (Visual Snapshot)**：聚焦流体连线动画、SVG 图形染色等高度可视觉化的模块进行像素级快照比对验证。
+
+---
+
+## 31 迭代路线图
+
+| 阶段 | 时间 | 核心交付 |
+|---|---|---|
+| Phase 1 | Month 1~3 | 设计器 MVP：画布引擎、拖拽系统、10个图表组件、历史记录、Schema v2.0 |
+| Phase 2 | Month 4~6 | 数据+混合画布 MVP：完整数据源、@vue-flow 接入、3种边动画、Schema v2.1 |
+| Phase 3 | Month 7~9 | 工业图元+企业级：200+工业图元、全7种动画、A* 避障、RBAC、嵌入 SDK |
+| Phase 4 | Month 10~12 | 高级特性：AI 辅助、多人协同（Y.js CRDT）、动画编辑器、插件市场、等保合规 |
+
+**工程质量保障（贯穿全程）：**
+
+- 测试覆盖率：核心引擎单元测试 ≥ 80%；Playwright E2E；性能回归基准
+- 代码质量：TypeScript 严格模式；ESLint + Prettier；pre-commit hooks；Storybook 组件文档
+- 迭代规范：Semantic Versioning；Conventional Commits；Changelog 自动生成；UAT 后发布
+
+> **团队配置：** Phase 2 起建议扩充「图引擎」方向工程师 1-2 名（熟悉 SVG/Canvas 动画+图算法），混合画布新增工作量约 **40%**，建议在 Phase 2~3 预留充足缓冲期。
+
+---
+
+*文档版本：v2.1 · 技术栈：Vue 3.5+ / Vite 7.3.1 / UnoCSS / @vue-flow/core · create-vue (npm create vue@latest) · 更新日期：2026-03*
