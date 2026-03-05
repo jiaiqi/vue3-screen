@@ -2,10 +2,13 @@
 import { computed, ref } from 'vue'
 import { Handle, Position, type NodeProps } from '@vue-flow/core'
 import { useSelectionStore } from '@/stores/selection'
+import { useCanvasStore } from '@/stores/canvas'
+import Port from '@/components/canvas/Port.vue'
 
 const props = defineProps<NodeProps>()
 
 const selectionStore = useSelectionStore()
+const canvasStore = useCanvasStore()
 
 const isSelected = computed(() => selectionStore.isSelected(props.id))
 
@@ -42,6 +45,46 @@ function getHandleStyle(port: any): Record<string, string> {
   }
 }
 
+function getPortType(port: any): 'input' | 'output' | 'both' {
+  if (port.type === 'source') return 'output'
+  if (port.type === 'target') return 'input'
+  return 'both'
+}
+
+function handlePortDragStart(portId: string, event: MouseEvent) {
+  const port = ports.value.find((p: any) => p.id === portId)
+  if (!port) return
+  
+  const portInfo = {
+    id: portId,
+    nodeId: props.id,
+    position: port.position as 'top' | 'right' | 'bottom' | 'left',
+    portType: getPortType(port),
+    offset: port.offset,
+    dataType: port.dataType,
+  }
+  
+  canvasStore.startEdgeDrag(portInfo)
+}
+
+function handlePortDragEnd(portId: string, event: MouseEvent) {
+  const targetElement = document.elementFromPoint(event.clientX, event.clientY)
+  const targetPortElement = targetElement?.closest('[data-port-id]') as HTMLElement
+  
+  if (targetPortElement) {
+    const targetPortId = targetPortElement.dataset.portId
+    const targetNodeId = targetPortElement.dataset.nodeId
+    
+    if (targetPortId && targetNodeId && targetNodeId !== props.id) {
+      canvasStore.endEdgeDrag(targetPortId)
+    } else {
+      canvasStore.cancelEdgeDrag()
+    }
+  } else {
+    canvasStore.cancelEdgeDrag()
+  }
+}
+
 const nodeClass = computed(() => [
   'graph-node',
   'relative',
@@ -61,6 +104,19 @@ const nodeClass = computed(() => [
         {{ data?.label || 'Graph Node' }}
       </div>
     </div>
+
+    <Port
+      v-for="port in ports"
+      :key="port.id"
+      :port-id="port.id"
+      :node-id="id"
+      :position="port.position"
+      :port-type="getPortType(port)"
+      :offset="port.offset"
+      :data-type="port.dataType"
+      @drag-start="handlePortDragStart"
+      @drag-end="handlePortDragEnd"
+    />
 
     <Handle
       v-for="port in sourcePorts"

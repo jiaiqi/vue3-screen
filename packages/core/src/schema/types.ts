@@ -77,7 +77,7 @@ export interface Page {
 
 export interface ComponentNode {
   id: string
-  nodeKind: 'widget'
+  nodeKind: 'widget' | 'graph'
   type: string
   label: string
   layout: NodeLayout
@@ -91,26 +91,54 @@ export interface ComponentNode {
 
 export interface GraphNodeSchema {
   id: string
+  name: string
   nodeKind: 'graph'
-  graphType: string
-  svgSource?: string
-  label: string
-  layout: NodeLayout
-  ports: Port[]
-  stateMapping?: StateMapping
-  tooltip?: TooltipConfig
+  type: string
+  x: number
+  y: number
+  width: number
+  height: number
+  rotation: number
+  zIndex: number
+  locked: boolean
+  hidden: boolean
+  graphData: {
+    fill: string
+    stroke: string
+    strokeWidth: number
+    opacity: number
+    ports?: PortSchema[]
+  }
+  dataBinding?: DataBinding
+  events?: EventBinding[]
 }
 
 export interface EdgeSchema {
   id: string
-  source: string
-  sourcePort: string
-  target: string
-  targetPort: string
-  pathType: 'bezier' | 'straight' | 'step' | 'smoothstep' | 'orthogonal'
-  style: EdgeStyle
-  animation: EdgeAnimation
-  label?: EdgeLabel
+  sourceNodeId: string
+  sourcePortId: string
+  targetNodeId: string
+  targetPortId: string
+  pathType: 'straight' | 'orthogonal' | 'bezier'
+  style: {
+    stroke: string
+    strokeWidth: number
+    strokeDasharray?: string
+    opacity: number
+  }
+  animation?: {
+    type: 'water' | 'electric' | 'arrow' | 'particle' | 'pulse' | 'glow' | 'gas' | 'data'
+    speed: number
+    direction: 'forward' | 'backward'
+    color?: string
+  }
+  label?: {
+    text: string
+    position: 'start' | 'middle' | 'end'
+    offset: number
+    style: CSSProperties
+  }
+  dataBinding?: DataBinding
 }
 
 export interface NodeLayout {
@@ -129,12 +157,13 @@ export interface NodeStyle {
   shadow?: string
 }
 
-export interface Port {
+export interface PortSchema {
   id: string
+  name: string
+  type: 'input' | 'output' | 'inout'
   position: 'top' | 'right' | 'bottom' | 'left'
-  offset?: { x: number; y: number }
-  type: 'source' | 'target' | 'both'
-  allowedEdges?: string[]
+  offset: number
+  dataType?: string
 }
 
 export interface DataBinding {

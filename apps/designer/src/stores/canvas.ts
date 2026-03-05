@@ -1,11 +1,41 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, shallowRef } from 'vue'
 import type { CanvasConfig, GridConfig } from '@screen/core'
+import type { VueFlow } from '@vue-flow/core'
 
 export interface GuideLine {
   id: string
   type: 'horizontal' | 'vertical'
   position: number
+}
+
+export interface PortInfo {
+  id: string
+  nodeId: string
+  position: 'top' | 'right' | 'bottom' | 'left'
+  portType: 'input' | 'output' | 'both'
+  offset?: { x: number; y: number }
+  dataType?: string
+}
+
+export interface EdgePreviewData {
+  sourcePortId: string
+  sourceNodeId: string
+  sourcePosition: 'top' | 'right' | 'bottom' | 'left'
+  targetX: number
+  targetY: number
+  targetPortId?: string
+  isValid: boolean
+  path: string
+}
+
+export interface Edge {
+  id: string
+  sourcePortId: string
+  sourceNodeId: string
+  targetPortId: string
+  targetNodeId: string
+  dataType?: string
 }
 
 export const useCanvasStore = defineStore('canvas', () => {
@@ -24,6 +54,11 @@ export const useCanvasStore = defineStore('canvas', () => {
   const offsetY = ref(0)
   const guides = ref<GuideLine[]>([])
   const showMinimap = ref(true)
+  const vueFlowInstance = shallowRef<InstanceType<typeof VueFlow> | null>(null)
+  
+  const edgeDragging = ref(false)
+  const edgePreview = ref<EdgePreviewData | null>(null)
+  const edges = ref<Edge[]>([])
 
   const scalePercent = computed(() => Math.round(scale.value * 100))
 
@@ -110,6 +145,83 @@ export const useCanvasStore = defineStore('canvas', () => {
     showMinimap.value = !showMinimap.value
   }
 
+  function setVueFlowInstance(instance: InstanceType<typeof VueFlow> | null) {
+    vueFlowInstance.value = instance
+  }
+
+  function syncTransform() {
+    if (!vueFlowInstance.value) return
+    
+    const flow = vueFlowInstance.value
+    const viewport = flow.viewport.value
+    
+    if (viewport.zoom !== undefined) {
+      scale.value = viewport.zoom
+    }
+    
+    if (viewport.x !== undefined && viewport.y !== undefined) {
+      offsetX.value = viewport.x
+      offsetY.value = viewport.y
+    }
+  }
+
+  function startEdgeDrag(port: PortInfo) {
+    edgeDragging.value = true
+    edgePreview.value = {
+      sourcePortId: port.id,
+      sourceNodeId: port.nodeId,
+      sourcePosition: port.position,
+      targetX: 0,
+      targetY: 0,
+      isValid: true,
+      path: '',
+    }
+  }
+
+  function updateEdgeDrag(x: number, y: number, isValid: boolean = true, path: string = '') {
+    if (!edgePreview.value) return
+    
+    edgePreview.value.targetX = x
+    edgePreview.value.targetY = y
+    edgePreview.value.isValid = isValid
+    edgePreview.value.path = path
+  }
+
+  function endEdgeDrag(targetPortId?: string) {
+    if (edgePreview.value && targetPortId) {
+      edgePreview.value.targetPortId = targetPortId
+    }
+    
+    edgeDragging.value = false
+    edgePreview.value = null
+  }
+
+  function addEdge(edge: Edge) {
+    edges.value.push(edge)
+  }
+
+  function removeEdge(edgeId: string) {
+    const index = edges.value.findIndex(e => e.id === edgeId)
+    if (index > -1) {
+      edges.value.splice(index, 1)
+    }
+  }
+
+  function getEdgesForNode(nodeId: string): { incoming: Edge[]; outgoing: Edge[] } {
+    const incoming = edges.value.filter(e => e.targetNodeId === nodeId)
+    const outgoing = edges.value.filter(e => e.sourceNodeId === nodeId)
+    return { incoming, outgoing }
+  }
+
+  function clearEdges() {
+    edges.value = []
+  }
+
+  function cancelEdgeDrag() {
+    edgeDragging.value = false
+    edgePreview.value = null
+  }
+
   return {
     config,
     scale,
@@ -120,6 +232,10 @@ export const useCanvasStore = defineStore('canvas', () => {
     transform,
     guides,
     showMinimap,
+    vueFlowInstance,
+    edgeDragging,
+    edgePreview,
+    edges,
     setScale,
     setScalePercent,
     resetScale,
@@ -134,5 +250,15 @@ export const useCanvasStore = defineStore('canvas', () => {
     updateGuidePosition,
     clearGuides,
     toggleMinimap,
+    setVueFlowInstance,
+    syncTransform,
+    startEdgeDrag,
+    updateEdgeDrag,
+    endEdgeDrag,
+    addEdge,
+    removeEdge,
+    getEdgesForNode,
+    clearEdges,
+    cancelEdgeDrag,
   }
 })
