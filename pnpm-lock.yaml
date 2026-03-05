@@ -51,8 +51,8 @@ importers:
         specifier: ^1.11.0
         version: 1.11.19
       echarts:
-        specifier: ^5.5.0
-        version: 5.6.0
+        specifier: ^6.0.0
+        version: 6.0.0
       element-plus:
         specifier: ^2.9.0
         version: 2.13.3(vue@3.5.29(typescript@5.9.3))
@@ -67,7 +67,7 @@ importers:
         version: 3.5.29(typescript@5.9.3)
       vue-echarts:
         specifier: ^7.0.0
-        version: 7.0.3(@vue/runtime-core@3.5.29)(echarts@5.6.0)(vue@3.5.29(typescript@5.9.3))
+        version: 7.0.3(@vue/runtime-core@3.5.29)(echarts@6.0.0)(vue@3.5.29(typescript@5.9.3))
       vue-router:
         specifier: ^4.5.0
         version: 4.6.4(vue@3.5.29(typescript@5.9.3))
@@ -146,8 +146,8 @@ importers:
         specifier: ^12.0.0
         version: 12.8.2(typescript@5.9.3)
       echarts:
-        specifier: ^5.5.0
-        version: 5.6.0
+        specifier: ^6.0.0
+        version: 6.0.0
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.23
@@ -156,7 +156,7 @@ importers:
         version: 3.5.29(typescript@5.9.3)
       vue-echarts:
         specifier: ^7.0.0
-        version: 7.0.3(@vue/runtime-core@3.5.29)(echarts@5.6.0)(vue@3.5.29(typescript@5.9.3))
+        version: 7.0.3(@vue/runtime-core@3.5.29)(echarts@6.0.0)(vue@3.5.29(typescript@5.9.3))
     devDependencies:
       '@types/json-schema':
         specifier: ^7.0.15
@@ -1387,6 +1387,9 @@ packages:
   echarts@5.6.0:
     resolution: {integrity: sha512-oTbVTsXfKuEhxftHqL5xprgLoc0k7uScAwtryCgWF6hPYFLRwOUHiFmHGCBKP5NPFNkDVopOieyUqYGH8Fa3kA==}
 
+  echarts@6.0.0:
+    resolution: {integrity: sha512-Tte/grDQRiETQP4xz3iZWSvoHrkCQtwqd6hs+mifXcjrCuo2iKWbajFObuLJVBlDIJlOzgQPd1hsaKt/3+OMkQ==}
+
   element-plus@2.13.3:
     resolution: {integrity: sha512-RwLVtFpeHjZ4UCtHxVi1/sGR2cr2xOL7hqWa7qJc/+gdO6QavVG8Nw1C647obCb3tIg2ztMhNbIIjZUv+6z1og==}
     peerDependencies:
@@ -2115,6 +2118,9 @@ packages:
 
   zrender@5.6.1:
     resolution: {integrity: sha512-OFXkDJKcrlx5su2XbzJvj/34Q3m6PvyCZkVPHGYpcCJ52ek4U/ymZyfuV1nKE23AyBJ51E/6Yr0mhZ7xGTO4ag==}
+
+  zrender@6.0.0:
+    resolution: {integrity: sha512-41dFXEEXuJpNecuUQq6JlbybmnHaqqpGlbH1yxnA5V9MMP4SbohSVZsJIwz+zdjQXSSlR1Vc34EgH1zxyTDvhg==}
 
 snapshots:
 
@@ -3178,6 +3184,11 @@ snapshots:
       tslib: 2.3.0
       zrender: 5.6.1
 
+  echarts@6.0.0:
+    dependencies:
+      tslib: 2.3.0
+      zrender: 6.0.0
+
   element-plus@2.13.3(vue@3.5.29(typescript@5.9.3)):
     dependencies:
       '@ctrl/tinycolor': 3.6.1
@@ -3888,6 +3899,16 @@ snapshots:
     transitivePeerDependencies:
       - '@vue/composition-api'
 
+  vue-echarts@7.0.3(@vue/runtime-core@3.5.29)(echarts@6.0.0)(vue@3.5.29(typescript@5.9.3)):
+    dependencies:
+      echarts: 6.0.0
+      vue: 3.5.29(typescript@5.9.3)
+      vue-demi: 0.13.11(vue@3.5.29(typescript@5.9.3))
+    optionalDependencies:
+      '@vue/runtime-core': 3.5.29
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+
   vue-eslint-parser@10.4.0(eslint@9.39.3(jiti@2.6.1)):
     dependencies:
       debug: 4.4.3
@@ -3938,5 +3959,9 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   zrender@5.6.1:
+    dependencies:
+      tslib: 2.3.0
+
+  zrender@6.0.0:
     dependencies:
       tslib: 2.3.0

@@ -9,27 +9,23 @@ interface Props {
   title?: string
   showLegend?: boolean
   showTooltip?: boolean
-  radius?: string | string[]
-  center?: string[]
-  roseType?: boolean
+  sort?: 'ascending' | 'descending' | 'none'
   data?: PieData[]
   theme?: ChartTheme
   option?: Partial<EChartsOption>
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: '饼图',
+  title: '漏斗图',
   showLegend: true,
   showTooltip: true,
-  radius: '70%',
-  center: ['50%', '50%'],
-  roseType: false,
+  sort: 'descending',
   data: () => [
-    { name: '直接访问', value: 335 },
-    { name: '邮件营销', value: 310 },
-    { name: '联盟广告', value: 234 },
-    { name: '视频广告', value: 135 },
-    { name: '搜索引擎', value: 1548 },
+    { name: '访问', value: 100 },
+    { name: '咨询', value: 80 },
+    { name: '订单', value: 60 },
+    { name: '点击', value: 40 },
+    { name: '支付', value: 20 },
   ],
 })
 
@@ -39,42 +35,52 @@ const chartOption = computed<EChartsOption>(() => ({
   title: {
     text: props.title,
     textStyle: { color: theme.value.textColor },
-    left: 'center',
   },
   tooltip: props.showTooltip ? { 
     trigger: 'item',
-    formatter: '{b}: {c} ({d}%)'
+    formatter: '{b}: {c}%'
   } : undefined,
   legend: props.showLegend ? { 
     textStyle: { color: theme.value.textColor },
-    orient: 'vertical',
-    left: 'left',
     data: props.data.map(d => d.name)
   } : undefined,
   series: [
     {
-      type: 'pie',
-      radius: props.radius,
-      center: props.center,
-      roseType: props.roseType ? 'area' : undefined,
-      data: props.data.map((item, index) => ({
-        ...item,
-        itemStyle: {
-          color: item.itemStyle?.color || getThemeColor(index),
-          borderRadius: item.itemStyle?.borderRadius || 8,
-        },
-      })),
+      type: 'funnel',
+      left: '10%',
+      top: '10%',
+      bottom: '10%',
+      width: '80%',
+      min: 0,
+      max: 100,
+      minSize: '0%',
+      maxSize: '100%',
+      sort: props.sort !== 'none' ? props.sort : undefined,
+      gap: 2,
       label: {
-        color: theme.value.textColor,
-        formatter: '{b}: {d}%'
+        show: true,
+        position: 'inside',
+        color: '#fff',
+        fontSize: 14,
+        formatter: '{b}: {c}%',
+      },
+      itemStyle: {
+        borderColor: theme.value.backgroundColor === 'transparent' ? '#0d1117' : '#fff',
+        borderWidth: 2,
       },
       emphasis: {
-        itemStyle: {
-          shadowBlur: 10,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }
+        label: {
+          fontSize: 16,
+          fontWeight: 'bold',
+        },
       },
+      data: props.data.map((item, index) => ({
+        name: item.name,
+        value: item.value,
+        itemStyle: {
+          color: item.itemStyle?.color || getThemeColor(index),
+        },
+      })),
     },
   ],
   backgroundColor: theme.value.backgroundColor,

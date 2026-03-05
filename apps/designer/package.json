@@ -19,7 +19,7 @@
     "@vue-flow/minimap": "^1.5.0",
     "@vueuse/core": "^12.0.0",
     "dayjs": "^1.11.0",
-    "echarts": "^5.5.0",
+    "echarts": "^6.0.0",
     "element-plus": "^2.9.0",
     "lodash-es": "^4.17.21",
     "pinia": "^2.3.0",

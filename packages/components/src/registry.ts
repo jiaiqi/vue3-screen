@@ -58,11 +58,20 @@ export function initializeComponents() {
   
   import('./data').then(({
     NumberCard, DataTable, Progress,
-    numberCardMeta, dataTableMeta, progressMeta
+    BaseNumberCard, TrendNumberCard, TargetNumberCard,
+    ProgressNumberCard, MultiDimensionNumberCard,
+    numberCardMeta, dataTableMeta, progressMeta,
+    baseNumberCardMeta, trendNumberCardMeta, targetNumberCardMeta,
+    progressNumberCardMeta, multiDimensionNumberCardMeta
   }) => {
     registerComponent(numberCardMeta, NumberCard)
     registerComponent(dataTableMeta, DataTable)
     registerComponent(progressMeta, Progress)
+    registerComponent(baseNumberCardMeta, BaseNumberCard)
+    registerComponent(trendNumberCardMeta, TrendNumberCard)
+    registerComponent(targetNumberCardMeta, TargetNumberCard)
+    registerComponent(progressNumberCardMeta, ProgressNumberCard)
+    registerComponent(multiDimensionNumberCardMeta, MultiDimensionNumberCard)
   })
   
   import('./decorations').then(({

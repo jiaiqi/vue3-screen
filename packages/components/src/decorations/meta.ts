@@ -1,5 +1,7 @@
 import type { ComponentMeta } from '../types'
 
+export * from './border-meta'
+
 export const techBorderMeta: ComponentMeta = {
   type: 'decoration-tech-border',
   name: '科技边框',

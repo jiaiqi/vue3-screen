@@ -9,24 +9,21 @@ interface Props {
   title?: string
   showLegend?: boolean
   showTooltip?: boolean
-  smooth?: boolean
-  showArea?: boolean
+  showLabel?: boolean
   data?: ChartData
   theme?: ChartTheme
   option?: Partial<EChartsOption>
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: '折线图',
+  title: '条形图',
   showLegend: true,
   showTooltip: true,
-  smooth: true,
-  showArea: true,
+  showLabel: true,
   data: () => ({
-    categories: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+    categories: ['产品 A', '产品 B', '产品 C', '产品 D', '产品 E'],
     series: [
-      { name: '销量', data: [120, 200, 150, 80, 70, 110, 130] },
-      { name: '订单', data: [80, 120, 100, 60, 50, 90, 100] },
+      { name: '销量', data: [320, 280, 250, 180, 150] },
     ],
   }),
 })
@@ -43,7 +40,7 @@ const chartOption = computed<EChartsOption>(() => {
     },
     tooltip: props.showTooltip ? { 
       trigger: 'axis',
-      axisPointer: { type: 'cross' }
+      axisPointer: { type: 'shadow' }
     } : undefined,
     legend: props.showLegend ? { 
       textStyle: { color: theme.value.textColor },
@@ -53,44 +50,42 @@ const chartOption = computed<EChartsOption>(() => {
       left: '3%',
       right: '4%',
       bottom: '3%',
+      top: '10%',
       containLabel: true
     },
     xAxis: {
       ...axisConfig.xAxis,
-      type: 'category',
-      boundaryGap: false,
-      data: props.data.categories,
+      type: 'value',
     },
     yAxis: {
       ...axisConfig.yAxis,
-      type: 'value',
+      type: 'category',
+      data: props.data.categories,
     },
     series: props.data.series.map((series, index) => ({
       name: series.name,
-      type: 'line',
-      smooth: props.smooth,
+      type: 'bar',
       data: series.data,
-      lineStyle: { 
-        color: getThemeColor(index),
-        width: 3
-      },
+      barWidth: '60%',
       itemStyle: {
-        color: getThemeColor(index),
-        borderColor: '#fff',
-        borderWidth: 2
-      },
-      areaStyle: props.showArea ? {
         color: {
           type: 'linear',
           x: 0,
           y: 0,
-          x2: 0,
-          y2: 1,
+          x2: 1,
+          y2: 0,
           colorStops: [
-            { offset: 0, color: `${getThemeColor(index)}40` },
-            { offset: 1, color: `${getThemeColor(index)}05` }
+            { offset: 0, color: getThemeColor(index) },
+            { offset: 1, color: `${getThemeColor(index)}80` }
           ]
-        }
+        },
+        borderRadius: [0, 4, 4, 0]
+      },
+      label: props.showLabel ? {
+        show: true,
+        position: 'right',
+        color: theme.value.textColor,
+        formatter: '{c}'
       } : undefined,
     })),
     backgroundColor: theme.value.backgroundColor,
