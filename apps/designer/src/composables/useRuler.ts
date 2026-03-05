@@ -10,7 +10,7 @@ export interface RulerMark {
 export function useRuler(type: 'horizontal' | 'vertical') {
   const store = useCanvasStore()
   const marks = ref<RulerMark[]>([])
-  const rulerSize = 20
+  const rulerSize = 16
 
   const updateMarks = () => {
     const newMarks: RulerMark[] = []

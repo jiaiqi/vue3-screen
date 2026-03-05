@@ -131,10 +131,10 @@ function handleMouseUp(e: MouseEvent) {
             />
             <text
               v-if="mark.isMajor"
-              :x="mark.position + 3"
-              :y="rulerHeight / 2 - 2"
-              fill="rgba(255, 255, 255, 0.5)"
-              font-size="10"
+              :x="mark.position + 2"
+              :y="10"
+              fill="rgba(255, 255, 255, 0.4)"
+              font-size="7"
               font-family="monospace"
             >
               {{ mark.value }}
@@ -170,10 +170,10 @@ function handleMouseUp(e: MouseEvent) {
             />
             <text
               v-if="mark.isMajor"
-              :y="mark.position + 3"
-              :x="rulerWidth / 2 - 2"
-              fill="rgba(255, 255, 255, 0.5)"
-              font-size="10"
+              :y="mark.position + 2"
+              :x="10"
+              fill="rgba(255, 255, 255, 0.4)"
+              font-size="7"
               font-family="monospace"
               writing-mode="vertical-rl"
               text-orientation="mixed"

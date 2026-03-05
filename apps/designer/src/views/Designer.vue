@@ -9,7 +9,7 @@ import TopToolbar from '@/components/toolbar/TopToolbar.vue'
 import MaterialPanel from '@/components/panels/MaterialPanel.vue'
 import PropsPanel from '@/components/panels/PropsPanel.vue'
 import LayerPanel from '@/components/panels/LayerPanel.vue'
-import Canvas from '@/components/canvas/Canvas.vue'
+import CanvasWithRuler from '@/components/canvas/CanvasWithRuler.vue'
 
 const designerStore = useDesignerStore()
 const canvasStore = useCanvasStore()
@@ -91,16 +91,7 @@ function handleFitToScreen() {
       </aside>
 
       <div class="canvas-area flex flex-1 flex-col overflow-hidden">
-        <div
-          ref="canvasContainerRef"
-          class="canvas-wrapper relative flex-1 overflow-hidden bg-canvas-bg"
-        >
-          <Canvas>
-            <div class="flex h-full w-full items-center justify-center text-text-muted">
-              <p>画布内容区域 - 拖拽组件到此处</p>
-            </div>
-          </Canvas>
-        </div>
+        <CanvasWithRuler />
 
         <div
           class="layer-panel-container relative border-t border-border bg-surface transition-all duration-300"

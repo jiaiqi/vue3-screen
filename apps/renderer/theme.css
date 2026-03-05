@@ -1,0 +1,38 @@
+/* Renderer 主题文件 - 继承设计师主题 */
+
+/* 从设计师应用导入主题变量 */
+@import '../designer/src/styles/theme.css';
+
+/* Renderer 特定的样式覆盖 */
+:root {
+  /* Renderer 运行时无需编辑功能，可以简化 */
+}
+
+/* 自适应缩放样式 */
+.screen-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.screen-content {
+  transform-origin: top left;
+  will-change: transform;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .screen-content {
+    touch-action: none;
+  }
+}
+
+/* 全屏模式 */
+:fullscreen {
+  background: var(--color-canvas-bg);
+}
+
+:fullscreen .screen-content {
+  transform-origin: center center;
+}

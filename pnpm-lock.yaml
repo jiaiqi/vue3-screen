@@ -11,6 +11,9 @@ importers:
       '@types/node':
         specifier: ^22.10.0
         version: 22.19.13
+      '@unocss/reset':
+        specifier: ^0.65.0
+        version: 0.65.4
       prettier:
         specifier: ^3.4.0
         version: 3.8.1
@@ -68,6 +71,9 @@ importers:
       vue-router:
         specifier: ^4.5.0
         version: 4.6.4(vue@3.5.29(typescript@5.9.3))
+      vue3-sketch-ruler:
+        specifier: ^2.3.3
+        version: 2.3.3
     devDependencies:
       '@unocss/reset':
         specifier: ^0.65.0
@@ -2079,6 +2085,9 @@ packages:
     peerDependencies:
       typescript: '>=5.0.0'
 
+  vue3-sketch-ruler@2.3.3:
+    resolution: {integrity: sha512-QgJG7e0uzHfNSCbdU7/QK1Q9g9LtDovioB5PoXQGsad3mI5ujGlw/DPhexVDHmR15D7UjMGhpP8m0LGVluAjCQ==}
+
   vue@3.5.29:
     resolution: {integrity: sha512-BZqN4Ze6mDQVNAni0IHeMJ5mwr8VAJ3MQC9FmprRhcBYENw+wOAAjRj8jfmN6FLl0j96OXbR+CjWhmAmM+QGnA==}
     peerDependencies:
@@ -3905,6 +3914,8 @@ snapshots:
       '@volar/typescript': 2.4.15
       '@vue/language-core': 2.2.12(typescript@5.9.3)
       typescript: 5.9.3
+
+  vue3-sketch-ruler@2.3.3: {}
 
   vue@3.5.29(typescript@5.9.3):
     dependencies:

@@ -14,9 +14,5 @@ export default defineConfig({
       '@screen/core': fileURLToPath(new URL('../../packages/core/src', import.meta.url)),
       '@screen/components': fileURLToPath(new URL('../../packages/components/src', import.meta.url)),
     },
-  },
-  server: {
-    port: 3000,
-    host: true,
-  },
+  }
 })

@@ -49,12 +49,11 @@ export const useCanvasStore = defineStore('canvas', () => {
     rulers: true,
   })
 
-  const scale = ref(1)
-  const offsetX = ref(0)
-  const offsetY = ref(0)
+  const scale = ref(0.8) // 初始缩放
+  const offsetX = ref(50) // 初始偏移
+  const offsetY = ref(50)
   const guides = ref<GuideLine[]>([])
   const showMinimap = ref(true)
-  const vueFlowInstance = shallowRef<InstanceType<typeof VueFlow> | null>(null)
   
   const edgeDragging = ref(false)
   const edgePreview = ref<EdgePreviewData | null>(null)
@@ -145,26 +144,6 @@ export const useCanvasStore = defineStore('canvas', () => {
     showMinimap.value = !showMinimap.value
   }
 
-  function setVueFlowInstance(instance: InstanceType<typeof VueFlow> | null) {
-    vueFlowInstance.value = instance
-  }
-
-  function syncTransform() {
-    if (!vueFlowInstance.value) return
-    
-    const flow = vueFlowInstance.value
-    const viewport = flow.viewport.value
-    
-    if (viewport.zoom !== undefined) {
-      scale.value = viewport.zoom
-    }
-    
-    if (viewport.x !== undefined && viewport.y !== undefined) {
-      offsetX.value = viewport.x
-      offsetY.value = viewport.y
-    }
-  }
-
   function startEdgeDrag(port: PortInfo) {
     edgeDragging.value = true
     edgePreview.value = {
@@ -232,7 +211,6 @@ export const useCanvasStore = defineStore('canvas', () => {
     transform,
     guides,
     showMinimap,
-    vueFlowInstance,
     edgeDragging,
     edgePreview,
     edges,
@@ -250,8 +228,6 @@ export const useCanvasStore = defineStore('canvas', () => {
     updateGuidePosition,
     clearGuides,
     toggleMinimap,
-    setVueFlowInstance,
-    syncTransform,
     startEdgeDrag,
     updateEdgeDrag,
     endEdgeDrag,
