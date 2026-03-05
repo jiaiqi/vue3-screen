@@ -41,3 +41,23 @@ export const titleBoxMeta: ComponentMeta = {
   },
   resizable: true,
 }
+
+export const dividerMeta: ComponentMeta = {
+  type: 'decoration-divider',
+  name: '分割线',
+  category: 'decoration',
+  icon: 'i-carbon-horizontal-rule',
+  defaultSize: { w: 400, h: 2 },
+  defaultProps: {
+    color: '#0073ff',
+    style: 'solid',
+  },
+  propsSchema: {
+    type: 'object',
+    properties: {
+      color: { type: 'string', title: '线条颜色', default: '#0073ff' },
+      style: { type: 'string', title: '线条样式', enum: ['solid', 'dashed', 'dotted'], default: 'solid' },
+    },
+  },
+  resizable: true,
+}

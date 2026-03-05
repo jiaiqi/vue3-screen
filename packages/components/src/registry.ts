@@ -44,3 +44,41 @@ export const componentCategories = computed(() => {
   components.value.forEach((c: ComponentInstance) => cats.add(c.meta.category))
   return Array.from(cats)
 })
+
+export function initializeComponents() {
+  import('./charts').then(({ 
+    BarChart, LineChart, PieChart, GaugeChart,
+    barChartMeta, lineChartMeta, pieChartMeta, gaugeChartMeta
+  }) => {
+    registerComponent(barChartMeta, BarChart)
+    registerComponent(lineChartMeta, LineChart)
+    registerComponent(pieChartMeta, PieChart)
+    registerComponent(gaugeChartMeta, GaugeChart)
+  })
+  
+  import('./data').then(({
+    NumberCard, DataTable, Progress,
+    numberCardMeta, dataTableMeta, progressMeta
+  }) => {
+    registerComponent(numberCardMeta, NumberCard)
+    registerComponent(dataTableMeta, DataTable)
+    registerComponent(progressMeta, Progress)
+  })
+  
+  import('./decorations').then(({
+    TechBorder, TitleBox, Divider,
+    techBorderMeta, titleBoxMeta, dividerMeta
+  }) => {
+    registerComponent(techBorderMeta, TechBorder)
+    registerComponent(titleBoxMeta, TitleBox)
+    registerComponent(dividerMeta, Divider)
+  })
+  
+  import('./containers').then(({
+    GroupContainer, TabsContainer,
+    groupContainerMeta, tabsContainerMeta
+  }) => {
+    registerComponent(groupContainerMeta, GroupContainer)
+    registerComponent(tabsContainerMeta, TabsContainer)
+  })
+}

@@ -10,6 +10,9 @@ import 'virtual:uno.css'
 
 import App from './App.vue'
 import router from './router'
+import { initializeComponents } from '@screen/components'
+
+initializeComponents()
 
 const app = createApp(App)
 

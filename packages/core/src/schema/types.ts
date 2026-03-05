@@ -25,6 +25,9 @@ export interface Background {
   color?: string
   image?: string
   opacity?: number
+  size?: string
+  position?: string
+  repeat?: string
 }
 
 export interface GridConfig {
@@ -32,6 +35,9 @@ export interface GridConfig {
   size: number
   snap: boolean
   color?: string
+  majorColor?: string
+  showMajor?: boolean
+  majorInterval?: number
 }
 
 export interface DataSource {

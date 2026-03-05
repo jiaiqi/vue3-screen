@@ -1,38 +1,29 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useCanvasStore, type GuideLine } from '@/stores/canvas'
 
-export interface GuideLine {
-  id: string
-  type: 'horizontal' | 'vertical'
-  position: number
-}
+export type { GuideLine }
 
 export function useGuideLine() {
-  const guides = ref<GuideLine[]>([])
+  const store = useCanvasStore()
+
+  const guides = computed(() => store.guides)
   const isDragging = ref(false)
   const dragGuide = ref<GuideLine | null>(null)
 
   function addGuide(type: 'horizontal' | 'vertical', position: number) {
-    const guide: GuideLine = {
-      id: `guide-${Date.now()}`,
-      type,
-      position,
-    }
-    guides.value.push(guide)
-    return guide
+    return store.addGuide(type, position)
   }
 
   function removeGuide(id: string) {
-    const index = guides.value.findIndex(g => g.id === id)
-    if (index > -1) {
-      guides.value.splice(index, 1)
-    }
+    store.removeGuide(id)
   }
 
   function updateGuidePosition(id: string, position: number) {
-    const guide = guides.value.find(g => g.id === id)
-    if (guide) {
-      guide.position = position
-    }
+    store.updateGuidePosition(id, position)
+  }
+
+  function clearGuides() {
+    store.clearGuides()
   }
 
   function startDrag(type: 'horizontal' | 'vertical', startPosition: number) {
@@ -61,6 +52,7 @@ export function useGuideLine() {
     addGuide,
     removeGuide,
     updateGuidePosition,
+    clearGuides,
     startDrag,
     updateDrag,
     endDrag,

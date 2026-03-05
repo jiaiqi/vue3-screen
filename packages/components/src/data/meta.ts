@@ -43,3 +43,27 @@ export const dataTableMeta: ComponentMeta = {
   },
   resizable: true,
 }
+
+export const progressMeta: ComponentMeta = {
+  type: 'data-progress',
+  name: '进度条',
+  category: 'data',
+  icon: 'i-carbon-progress-bar',
+  defaultSize: { w: 300, h: 40 },
+  defaultProps: {
+    value: 65,
+    max: 100,
+    color: '#0073ff',
+    showLabel: true,
+  },
+  propsSchema: {
+    type: 'object',
+    properties: {
+      value: { type: 'number', title: '当前值', default: 65 },
+      max: { type: 'number', title: '最大值', default: 100 },
+      color: { type: 'string', title: '进度颜色', default: '#0073ff' },
+      showLabel: { type: 'boolean', title: '显示标签', default: true },
+    },
+  },
+  resizable: true,
+}
