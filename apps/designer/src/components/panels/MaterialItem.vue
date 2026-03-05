@@ -18,16 +18,27 @@ const iconClass = computed(() => props.component.meta.icon || 'i-carbon-document
 const displayName = computed(() => props.component.meta.name)
 
 function handleDragStart(e: DragEvent) {
-  if (!e.dataTransfer) return
+  if (!e.dataTransfer) {
+    console.error('[MaterialItem] dataTransfer is null')
+    return
+  }
+  
+  console.log('[MaterialItem] Drag start:', {
+    type: props.component.meta.type,
+    meta: props.component.meta,
+  })
   
   isDragging.value = true
   
   const dragData = {
-    type: props.component.type,
+    type: props.component.meta.type,
     meta: props.component.meta,
   }
   
-  e.dataTransfer.setData('application/json', JSON.stringify(dragData))
+  const dataStr = JSON.stringify(dragData)
+  console.log('[MaterialItem] Setting data:', dataStr)
+  
+  e.dataTransfer.setData('application/json', dataStr)
   e.dataTransfer.effectAllowed = 'copy'
   
   const ghostEl = e.target as HTMLElement

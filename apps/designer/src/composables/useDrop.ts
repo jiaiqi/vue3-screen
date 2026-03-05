@@ -43,13 +43,22 @@ export function useDrop(
 
   function handleDragEnter(e: DragEvent) {
     const dataStr = e.dataTransfer?.getData('application/json')
-    if (!dataStr) return
+    if (!dataStr) {
+      console.warn('[useDrop] No data in dataTransfer')
+      return
+    }
 
     try {
       const data: DropData = JSON.parse(dataStr)
+      console.log('[useDrop] Drag data received:', {
+        type: data.type,
+        meta: data.meta,
+        category: data.meta?.category,
+      })
       dragData.value = data
       isDragOver.value = true
-    } catch {
+    } catch (err) {
+      console.error('[useDrop] Failed to parse drag data:', err)
       dragData.value = null
     }
   }
@@ -71,9 +80,13 @@ export function useDrop(
     const width = meta?.defaultSize?.w ?? defaultSize.value.width
     const height = meta?.defaultSize?.h ?? defaultSize.value.height
 
+    // 使用鼠标位置作为组件左上角，减去半个组件尺寸使组件中心跟随鼠标
+    const offsetX = 10 // 向右偏移一点，避免完全挡住鼠标
+    const offsetY = 10 // 向下偏移一点
+    
     dropPreview.value = {
-      x: snappedX - width / 2,
-      y: snappedY - height / 2,
+      x: snappedX + offsetX,
+      y: snappedY + offsetY,
       width,
       height,
     }
@@ -103,6 +116,7 @@ export function useDrop(
 
     const dataStr = e.dataTransfer?.getData('application/json')
     if (!dataStr) {
+      console.warn('[useDrop] Drop: No data in dataTransfer')
       dropPreview.value = null
       dragData.value = null
       return
@@ -110,6 +124,11 @@ export function useDrop(
 
     try {
       const data: DropData = JSON.parse(dataStr)
+      console.log('[useDrop] Drop data:', {
+        type: data.type,
+        meta: data.meta,
+        category: data.meta?.category,
+      })
 
       const canvasPos = screenToCanvas(e.clientX, e.clientY)
       const snappedX = snapToGrid(canvasPos.x)
@@ -119,12 +138,16 @@ export function useDrop(
       const width = meta?.defaultSize?.w ?? defaultSize.value.width
       const height = meta?.defaultSize?.h ?? defaultSize.value.height
 
-      const dropX = snappedX - width / 2
-      const dropY = snappedY - height / 2
+      // 与预览位置保持一致
+      const offsetX = 10
+      const offsetY = 10
+      const dropX = snappedX + offsetX
+      const dropY = snappedY + offsetY
 
+      console.log('[useDrop] Calling onDrop with:', { type: data.type, x: dropX, y: dropY })
       onDrop(data, dropX, dropY)
     } catch (err) {
-      console.error('Failed to parse drop data:', err)
+      console.error('[useDrop] Failed to parse drop data:', err)
     }
 
     dropPreview.value = null

@@ -81,54 +81,54 @@ const animationDuration = computed(() => `${3 / props.speed}s`)
           animationDelay: `${particle.delay}s`,
         }"
       >
-        <animate
-          v-if="direction === 'horizontal'"
-          attributeName="cx"
-          :from="-particle.size"
-          :to="100 + particle.size"
-          :dur="animationDuration"
-          repeatCount="indefinite"
-        />
-        <animate
-          v-if="direction === 'horizontal'"
-          attributeName="cy"
-          :values="`${particle.y}; ${particle.y}`"
-          :dur="animationDuration"
-          repeatCount="indefinite"
-        />
+        <template v-if="direction === 'horizontal'">
+          <animate
+            attributeName="cx"
+            :from="-particle.size"
+            :to="100 + particle.size"
+            :dur="animationDuration"
+            repeatCount="indefinite"
+          />
+          <animate
+            attributeName="cy"
+            :values="`${particle.y}; ${particle.y}`"
+            :dur="animationDuration"
+            repeatCount="indefinite"
+          />
+        </template>
         
-        <animate
-          v-else-if="direction === 'vertical'"
-          attributeName="cy"
-          :from="-particle.size"
-          :to="100 + particle.size"
-          :dur="animationDuration"
-          repeatCount="indefinite"
-        />
-        <animate
-          v-else-if="direction === 'vertical'"
-          attributeName="cx"
-          :values="`${particle.x}; ${particle.x}`"
-          :dur="animationDuration"
-          repeatCount="indefinite"
-        />
+        <template v-else-if="direction === 'vertical'">
+          <animate
+            attributeName="cy"
+            :from="-particle.size"
+            :to="100 + particle.size"
+            :dur="animationDuration"
+            repeatCount="indefinite"
+          />
+          <animate
+            attributeName="cx"
+            :values="`${particle.x}; ${particle.x}`"
+            :dur="animationDuration"
+            repeatCount="indefinite"
+          />
+        </template>
         
-        <animate
-          v-else
-          attributeName="cx"
-          :from="particle.x"
-          :to="particle.x + 20"
-          :dur="animationDuration"
-          repeatCount="indefinite"
-        />
-        <animate
-          v-else
-          attributeName="cy"
-          :from="particle.y"
-          :to="particle.y + 20"
-          :dur="animationDuration"
-          repeatCount="indefinite"
-        />
+        <template v-else>
+          <animate
+            attributeName="cx"
+            :from="particle.x"
+            :to="particle.x + 20"
+            :dur="animationDuration"
+            repeatCount="indefinite"
+          />
+          <animate
+            attributeName="cy"
+            :from="particle.y"
+            :to="particle.y + 20"
+            :dur="animationDuration"
+            repeatCount="indefinite"
+          />
+        </template>
       </circle>
     </svg>
     

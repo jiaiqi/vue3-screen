@@ -8,9 +8,42 @@ import '@unocss/reset/tailwind.css'
 import './styles/theme.css'
 import 'virtual:uno.css'
 
+// 导入 ECharts 和渲染器
+import * as echarts from 'echarts'
+// 导入 Canvas 渲染器（必需）
+import { use } from 'echarts/core'
+import { CanvasRenderer } from 'echarts/renderers'
+// 导入常用图表（按需导入）
+import {
+  BarChart,
+  LineChart,
+  PieChart,
+  GaugeChart,
+} from 'echarts/charts'
+// 导入常用组件
+import {
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent,
+} from 'echarts/components'
+
 import App from './App.vue'
 import router from './router'
 import { initializeComponents } from '@screen/components'
+
+// 注册 ECharts 组件
+use([
+  CanvasRenderer,
+  BarChart,
+  LineChart,
+  PieChart,
+  GaugeChart,
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent,
+])
 
 initializeComponents()
 

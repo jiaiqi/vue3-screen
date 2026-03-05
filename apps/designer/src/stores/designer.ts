@@ -1,14 +1,22 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { ScreenSchema, ComponentNode, GraphNodeSchema, EdgeSchema, NodeLayout } from '@screen/core'
-import { useHistoryManager, AddNodeCommand, MoveCommand, DeleteCommand, BatchCommand } from '@screen/core'
+import { useHistoryManager, AddNodeCommand, MoveCommand, DeleteCommand, BatchCommand, ResizeCommand } from '@screen/core'
 import { useCanvasStore } from './canvas'
 import { useSelectionStore } from './selection'
+import { getComponent } from '@screen/components'
+
+export type TabType = 'props' | 'layer' | 'event'
 
 export interface PanelState {
   material: { collapsed: boolean; width: number }
   props: { collapsed: boolean; width: number }
-  layer: { collapsed: boolean; height: number }
+  layer: { collapsed: boolean; width: number }
+  right: {
+    activeTab: TabType
+    collapsed: boolean
+    width: number
+  }
 }
 
 export interface SavedScreen {
@@ -21,23 +29,41 @@ export interface SavedScreen {
 const STORAGE_KEY = 'vue3-screen-saved-screens'
 const CURRENT_SCREEN_KEY = 'vue3-screen-current'
 
+const ACTIVE_TAB_KEY = 'vue3-screen-active-tab'
+
 export const useDesignerStore = defineStore('designer', () => {
+  const savedActiveTab = localStorage.getItem(ACTIVE_TAB_KEY) as TabType | null
+  
   const panelState = ref<PanelState>({
     material: { collapsed: false, width: 260 },
     props: { collapsed: false, width: 320 },
-    layer: { collapsed: false, height: 200 },
+    layer: { collapsed: false, width: 320 },
+    right: {
+      activeTab: savedActiveTab || 'props',
+      collapsed: false,
+      width: 320,
+    },
   })
 
-  function togglePanel(panel: 'material' | 'props' | 'layer') {
-    panelState.value[panel].collapsed = !panelState.value[panel].collapsed
+  function togglePanel(panel: 'material' | 'props' | 'layer' | 'right') {
+    if (panel === 'right') {
+      panelState.value.right.collapsed = !panelState.value.right.collapsed
+    } else {
+      panelState.value[panel].collapsed = !panelState.value[panel].collapsed
+    }
   }
 
-  function setPanelWidth(panel: 'material' | 'props', width: number) {
-    panelState.value[panel].width = width
+  function setActiveTab(tab: TabType) {
+    panelState.value.right.activeTab = tab
+    localStorage.setItem(ACTIVE_TAB_KEY, tab)
   }
 
-  function setPanelHeight(height: number) {
-    panelState.value.layer.height = height
+  function setPanelWidth(panel: 'material' | 'props' | 'right', width: number) {
+    if (panel === 'right') {
+      panelState.value.right.width = width
+    } else {
+      panelState.value[panel].width = width
+    }
   }
 
   const schema = ref<ScreenSchema>({
@@ -122,8 +148,29 @@ export const useDesignerStore = defineStore('designer', () => {
     label?: string
     props?: Record<string, unknown>
   }) {
-    const node = createNode(type, x, y, options)
+    console.log('[designerStore] addNodeAt called:', { type, x, y, options })
+    
+    // 获取组件的默认 props
+    const component = getComponent(type)
+    const defaultProps = component?.meta.defaultProps || {}
+    const defaultWidth = component?.meta.defaultSize?.w || 400
+    const defaultHeight = component?.meta.defaultSize?.h || 300
+    
+    console.log('[designerStore] Component meta:', {
+      defaultWidth,
+      defaultHeight,
+      defaultProps,
+    })
+    
+    const node = createNode(type, x, y, {
+      ...options,
+      width: options?.width ?? defaultWidth,
+      height: options?.height ?? defaultHeight,
+      props: options?.props ? { ...defaultProps, ...options.props } : defaultProps,
+    })
+    console.log('[designerStore] Created node:', node)
     addNode(node)
+    console.log('[designerStore] Node added to store')
     return node
   }
 
@@ -565,7 +612,7 @@ export const useDesignerStore = defineStore('designer', () => {
     redo,
     togglePanel,
     setPanelWidth,
-    setPanelHeight,
+    setActiveTab,
     createNewScreen,
     saveScreen,
     saveAs,

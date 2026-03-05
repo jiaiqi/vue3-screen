@@ -54,16 +54,6 @@ const getComponentsForCategory = (category: string) => {
   return getComponentsByCategory(category)
 }
 
-function handleDragStart(e: DragEvent, component: any) {
-  if (!e.dataTransfer) return
-  
-  e.dataTransfer.setData('application/json', JSON.stringify({
-    type: component.type,
-    meta: component.meta,
-  }))
-  e.dataTransfer.effectAllowed = 'copy'
-}
-
 function handleCollapseChange(val: CollapseModelValue) {
   if (Array.isArray(val)) {
     activeCollapse.value = val.map(String)
@@ -125,8 +115,6 @@ function handleCollapseChange(val: CollapseModelValue) {
               :key="component.id"
               :component="component"
               :gradient="category.gradient"
-              draggable="true"
-              @dragstart="handleDragStart($event, component)"
             />
           </div>
         </ElCollapseItem>

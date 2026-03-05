@@ -1,0 +1,8 @@
+export { default as BaseTitleBox } from './BaseTitleBox.vue'
+export { default as TechTitleBox } from './TechTitleBox.vue'
+export { default as GradientTitleBox } from './GradientTitleBox.vue'
+export { default as TitleBox3D } from './TitleBox3D.vue'
+export { default as HoverTitleBox } from './HoverTitleBox.vue'
+export { default as ComboTitleBox } from './ComboTitleBox.vue'
+export { default as DecoTitleBox } from './DecoTitleBox.vue'
+export { default as CustomTitleBox } from './CustomTitleBox.vue'

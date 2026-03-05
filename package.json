@@ -12,6 +12,8 @@
     "format": "prettier --write \"**/*.{js,ts,vue,json,md}\""
   },
   "devDependencies": {
+    "@iconify-json/carbon": "^1.2.19",
+    "@iconify-json/mdi": "^1.2.3",
     "@types/node": "^22.10.0",
     "@unocss/reset": "^0.65.0",
     "prettier": "^3.4.0",

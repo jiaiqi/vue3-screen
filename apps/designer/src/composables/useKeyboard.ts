@@ -201,6 +201,30 @@ export function useKeyboard() {
         designerStore.preview()
       },
       description: '预览'
+    },
+    {
+      key: '1',
+      ctrl: true,
+      action: () => {
+        designerStore.setActiveTab('props')
+      },
+      description: '切换到属性面板'
+    },
+    {
+      key: '2',
+      ctrl: true,
+      action: () => {
+        designerStore.setActiveTab('layer')
+      },
+      description: '切换到图层面板'
+    },
+    {
+      key: '3',
+      ctrl: true,
+      action: () => {
+        designerStore.setActiveTab('event')
+      },
+      description: '切换到事件面板'
     }
   ]
 

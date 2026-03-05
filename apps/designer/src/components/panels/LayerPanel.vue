@@ -100,6 +100,7 @@ const selectedKeys = computed(() => Array.from(selectionStore.selectedIds))
 function handleNodeClick(data: TreeNode) {
   if (data.isGroup) return
   selectionStore.select(data.id)
+  designerStore.setActiveTab('props')
 }
 
 function handleCheckChange(data: TreeNode, checked: boolean) {
@@ -396,7 +397,17 @@ function collapseAll() {
 <style scoped>
 .layer-panel {
   --el-bg-color: var(--color-bg-surface);
+  --el-fill-color-blank: var(--color-bg-surface);
   background: var(--color-bg-surface);
+}
+
+/* 覆盖 Element Plus Tree 组件的默认背景色 */
+.layer-panel :deep(.el-tree) {
+  background: transparent;
+}
+
+.layer-panel :deep(.el-tree-node__content) {
+  background: transparent !important;
 }
 
 .layer-panel .header {
@@ -461,16 +472,18 @@ function collapseAll() {
 .layer-panel :deep(.el-tree-node__content) {
   height: 36px;
   border-radius: 4px;
-  margin: 2px 0;
+  margin: 2px 4px;
+  padding: 0 8px;
   transition: all 0.2s ease;
+  background: transparent !important;
 }
 
 .layer-panel :deep(.el-tree-node__content:hover) {
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(0, 212, 255, 0.1) !important;
 }
 
 .layer-panel :deep(.el-tree-node.is-current > .el-tree-node__content) {
-  background: rgba(0, 212, 255, 0.15);
+  background: rgba(0, 212, 255, 0.15) !important;
   border-left: 2px solid var(--color-primary);
 }
 
